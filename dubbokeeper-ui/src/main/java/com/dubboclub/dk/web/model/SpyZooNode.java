@@ -18,8 +18,10 @@ public class SpyZooNode {
     private List<SpyZooNode> childNodes;
     
     private List<SpyZooNode> nodeList;
-    
+
     private Stat nodeStat;
+
+    private String data;
 
     public List<SpyZooNode> getNodeList() {
         return nodeList;
@@ -52,7 +54,7 @@ public class SpyZooNode {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getDecodeName() {
 		return decodeName;
 	}
@@ -67,5 +69,13 @@ public class SpyZooNode {
 
     public void setChildNodes(List<SpyZooNode> childNodes) {
         this.childNodes = childNodes;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

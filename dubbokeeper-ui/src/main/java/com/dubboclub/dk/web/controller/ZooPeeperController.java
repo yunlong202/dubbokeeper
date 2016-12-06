@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -60,12 +61,17 @@ public class ZooPeeperController implements InitializingBean{
             if(zooKeeper.getState().isAlive()){
                 List<String> children = zooKeeper.getChildren(parent,false);
                 List<SpyZooNode> nodes = new ArrayList<SpyZooNode>();
+
                 for(String child:children){
                     SpyZooNode node = new SpyZooNode();
                     node.setName(child);
                     node.setDecodeName(URLDecoder.decode(child, "UTF-8"));
                     node.setParent(parent);
-                    node.setNodeStat(zooKeeper.exists((parent.equals("/")?"":parent)+"/"+child,false));
+                    Stat stat = new Stat();
+                    byte[] data = zooKeeper.getData((parent.equals("/")?"":parent)+"/"+child, false, stat);
+                    if (data != null) node.setData(new String(data,"utf-8"));
+                    node.setNodeStat(stat);
+//                    node.setNodeStat(zooKeeper.exists((parent.equals("/")?"":parent)+"/"+child,false));
                     if(zooKeeper.getChildren((parent.equals("/")?"":parent)+"/"+child,false).size()>0){
                         node.setNodeList(new ArrayList<SpyZooNode>());
                     }else{
@@ -73,6 +79,7 @@ public class ZooPeeperController implements InitializingBean{
                     }
                     nodes.add(node);
                 }
+
                 response.setNodeList(nodes);
             }else{
                 response.setState(SpyZooResponse.State.REMOTE_ERROR);
